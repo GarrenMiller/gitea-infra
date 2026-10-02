@@ -1,0 +1,46 @@
+name: gitea-test
+
+services:
+  gitea:
+    image: gitea/gitea:1
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__security__INSTALL_LOCK=true
+      - GITEA__actions__ENABLED=true
+      - GITEA__repository__DEFAULT_MIRROR_REPO_UNITS=repo.code,repo.releases,repo.issues,repo.pulls,repo.wiki,repo.projects,repo.packages,repo.actions
+      - GITEA__server__ROOT_URL=${GITEA_ROOT_URL}
+      - GITEA__server__SSH_PORT=2223
+    ports:
+      - "3000:3000"
+      - "2223:22"
+    volumes:
+      - gitea-data:/data
+    networks:
+      - gitea-net
+
+  runner:
+    image: gitea/runner:latest
+    container_name: gitea-runner
+    restart: unless-stopped
+    environment:
+      - GITEA_INSTANCE_URL=${GITEA_ROOT_URL}
+      - GITEA_RUNNER_REGISTRATION_TOKEN=${RUNNER_TOKEN}
+      - GITEA_RUNNER_NAME=local-runner
+      - GITEA_RUNNER_LABELS=ubuntu-latest:docker://node:20-bookworm
+    volumes:
+      - runner-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gitea-net
+    depends_on:
+      - gitea
+
+networks:
+  gitea-net:
+    name: gitea-test-net
+
+volumes:
+  gitea-data:
+  runner-data:
