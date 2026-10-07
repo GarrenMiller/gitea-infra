@@ -22,19 +22,8 @@ esac
 
 ROOT="${GITEA_ROOT_URL%/}"
 
-body=$(URL="$url" NAME="$name" OWNER="$owner" SERVICE="$service" python3 - <<'PY'
-import json, os
-print(json.dumps({
-    "clone_addr": os.environ["URL"],
-    "repo_name": os.environ["NAME"],
-    "repo_owner": os.environ["OWNER"],
-    "service": os.environ["SERVICE"],
-    "mirror": True,
-    "mirror_interval": "10m0s",
-    "private": False,
-}))
-PY
-)
+body=$(printf '{"clone_addr":"%s","repo_name":"%s","repo_owner":"%s","service":"%s","mirror":true,"mirror_interval":"%s","private":false}' \
+  "$url" "$name" "$owner" "$service" "${MIRROR_INTERVAL:-10m0s}")
 
 curl -fsS -X POST \
   -u "$GITEA_ADMIN_USER:$GITEA_ADMIN_PASSWORD" \

@@ -1,4 +1,4 @@
-name: gitea-test
+name: gitea
 
 services:
   gitea:
@@ -39,7 +39,7 @@ services:
 
 networks:
   gitea-net:
-    name: gitea-test-net
+    name: gitea-net
 
 volumes:
   gitea-data:

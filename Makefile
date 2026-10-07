@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /usr/bin/env bash
 COMPOSE := docker compose
 
 .DEFAULT_GOAL := help
